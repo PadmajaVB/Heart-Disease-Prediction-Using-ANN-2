@@ -11,8 +11,7 @@
 #define NUMOUT 1
 
 #define rando() ((double)rand()/(RAND_MAX))
-//#define rando1() ((double)(rand()%2))
-//#define rando2() ((double)(rand()%2))
+
 
 void SaveWeights1(double array[][NUMHID+1],int n,int m, char arrName[]){
  
@@ -68,6 +67,7 @@ printf("\n %sfile created",filename);
 
 int main()
 {
+    clock_t begin = clock();
     int randPrint;
     int i, j, k, p, np, op, ranpat[NUMPAT+1], epoch;
     int NumPattern = NUMPAT, NumInput = NUMIN, NumHidden = NUMHID, NumOutput = NUMOUT;
@@ -117,26 +117,6 @@ int main()
      }
 
 
-	/*for (i=0;i<NUMPAT+1;i++)
-	{
-		for (j=0;j<NUMIN+1;j++)
-		{
-			printf ("Input[%d][%d] = %f\n",i,j,Input[i][j]);
-		}
-		printf ("\n");
-	}
-
-        printf ("\n");
-        printf ("\n");
-
-	for (i=0;i<NUMPAT+1;i++)
-	{
-		for (j=0;j<NUMOUT+1;j++)
-		{
-			printf ("Target[%d][%d] = %f\n",i,j,Target[i][j]);
-		}
-		printf ("\n");
-	}*/
     fclose(tstream);
     fclose(fstream);
     
@@ -153,13 +133,11 @@ int main()
     for( k = 1 ; k <= NumOutput ; k ++ ) {    /* initialize WeightHO and DeltaWeightHO */
         for( j = 0 ; j <= NumHidden ; j++ ) {
             DeltaWeightHO[j][k] = 0.0 ;
-            //randPrint=rando();
-            printf ("randPrint = %f\n",rando());
             WeightHO[j][k] = 2.0 * ( rando() - 0.5 ) * smallwt ;
         }
     }
 
-    for( epoch = 0 ; epoch < 1000000 ; epoch++) {    /* iterate weight updates */
+    for( epoch = 0 ; epoch < 100000 ; epoch++) {    /* iterate weight updates */
  
         for( p = 1 ; p <= NumPattern ; p++ ) {    /* randomize order of individuals */
             ranpat[p] = p ;
@@ -186,6 +164,7 @@ int main()
                 }
                 Hidden[p][j] = 1.0/(1.0 + exp(-SumH[p][j])) ;
             }
+            
             for( k = 1 ; k <= NumOutput ; k++ ) {    /* compute output unit activations and errors */
                 SumO[p][k] = WeightHO[0][k] ;
                 for( j = 1 ; j <= NumHidden ; j++ ) {
@@ -249,6 +228,10 @@ int main()
             fprintf(stdout, "%f\t%f\t", Target[p][k], Output[p][k]) ;
         }
     }
+    
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("\n\nTime take for the code execution=%f sec\n",time_spent);
     fprintf(stdout, "\n\nGoodbye!\n\n") ;
 
     return 1 ;
